@@ -29,4 +29,5 @@ dependencies = [
     "transformers>=4.56.1",
     "tree>=0.2.4",
     "uv>=0.8.17",
+    "xlsxwriter>=3.2.5",
 ]
