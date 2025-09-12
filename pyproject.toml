@@ -4,4 +4,24 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "graphviz>=0.21",
+    "jupyter>=1.1.1",
+    "markdown>=3.9",
+    "matplotlib>=3.10.6",
+    "mpld3>=0.5.11",
+    "nbconvert>=7.16.6",
+    "nltk>=3.9.1",
+    "numpy>=2.3.3",
+    "pandas>=2.3.2",
+    "rise>=5.7.1",
+    "sacrebleu>=2.5.1",
+    "sacremoses>=0.1.1",
+    "scikit-learn>=1.7.2",
+    "scipy>=1.16.2",
+    "spacy>=3.8.7",
+    "tokenizers>=0.22.0",
+    "torch>=2.8.0",
+    "torchvision>=0.23.0",
+    "transformers>=4.56.1",
+]
