@@ -2,13 +2,13 @@ import polars as pl
 import nltk
 from transformers import AutoTokenizer
 from data.const import ARB_CACHE, KOR_CACHE, TELU_CACHE
-from typing import TypeAlias
+from typing import TypeAlias, cast
 
 NGram = tuple[str, ...]
 Tokens: TypeAlias = list[str]
 TokenizedSentences: TypeAlias = list[Tokens]
-DataSplit: TypeAlias = tuple[TokenizedSentences, TokenizedSentences]
 NGramsDict: TypeAlias = dict[NGram, int]
+ModelReadyData: TypeAlias = tuple[tuple[NGramsDict, NGramsDict], list[list[NGram]]]
 
 class DataInconsistencyError(Exception):
     """Custom error for data inconsistency issues."""
@@ -28,7 +28,7 @@ def train_test_split_and_tokenize(corpus: pl.Series,
                                   train_split: float = 0.7,
                                   n: int = 1,
                                   verbose: bool = False,
-                                ) -> DataSplit:
+) -> tuple[TokenizedSentences, TokenizedSentences]:
     """Split into train, val, test"""
     train_index = int(len(corpus) * train_split)
     ngram_ready_tokens = [tokenize(seq, n=n) for seq in corpus]
@@ -90,3 +90,14 @@ def get_ngrams_dict_from_sentences(
         print(f"Number of duplicate {n}-grams encountered:  {sum(all_count_dict.values()) - len(all_count_dict):,}")
     
     return all_count_dict
+
+def get_model_ready_data(corpus: pl.Series, n: int) -> ModelReadyData:
+    """One function to call on relevant series, to get NGramModel ready data"""
+    x_train, x_test = train_test_split_and_tokenize(corpus, n=n)
+    nm1grams_dict = get_ngrams_dict_from_sentences(x_train, n-1, verbose=False)
+    ngrams_dict = get_ngrams_dict_from_sentences(x_train, n, verbose=False)
+    # Make test into list of ngram sentences
+    x_test = list([nltk.ngrams(sentence, n) for sentence in x_test])
+    x_test = cast(list[list[NGram]], x_test)  # Type hinting for clarity
+    data = cast(ModelReadyData, (nm1grams_dict, ngrams_dict, x_test))
+    return data
