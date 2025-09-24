@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
+import os
 
 
 def train(
@@ -10,6 +11,7 @@ def train(
         optimizer: torch.optim.Optimizer,
         n_epochs: int, 
         device: torch.device,
+        save_path: str,
         patience: int = 10
     ):
     '''
@@ -46,15 +48,16 @@ def train(
         print(f'Validation accuracy: {acc}, train loss: {sum(loss_epoch) / len(loss_epoch)}')
 
         # Keep track of the best model based on the accuracy
+        os.makedirs(os.path.dirname(save_path), exist_ok=True)
         if acc > best_acc:
-            torch.save(model.state_dict(), 'best_model')
+            torch.save(model.state_dict(), save_path)
             best_acc = acc
             pcounter = 0
         else:
             pcounter += 1
             if pcounter == patience:
                 break
-    model.load_state_dict(torch.load('best_model'))
+    model.load_state_dict(torch.load(save_path))
     return losses, best_acc
 
 

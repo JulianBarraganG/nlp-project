@@ -15,10 +15,8 @@ class BiLSTMLanguageModel(nn.Module):
         :param lstm_dim: The dimensionality of the BiLSTM network
         :param dropout_prob: Dropout probability
         """
-        # First thing is to call the superclass initializer
         super().__init__()
 
-        # Get vocab size and embedding dimension from the pretrained embeddings
         vocab_size = pretrained_embeddings.shape[0] # Size of the vocabulary
         embed_dim = pretrained_embeddings.shape[1] # Dimensionality of the embeddings
 
@@ -67,7 +65,9 @@ class BiLSTMLanguageModel(nn.Module):
         lstm_out, _ = self.model['bilstm'](lstm_in)
 
         # Unpack the packed sequence
-        lstm_out, _ = nn.utils.rnn.pad_packed_sequence(lstm_out, batch_first=True)
+        lstm_out, _ = nn.utils.rnn.pad_packed_sequence(
+            lstm_out, batch_first=True, total_length=inputs.size(1)
+        )
 
         ff_in = self.dropout(lstm_out)
 
