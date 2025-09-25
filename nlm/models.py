@@ -74,3 +74,90 @@ class BiLSTMLanguageModel(nn.Module):
         logits = self.model['lm_head'](ff_in)
 
         return logits  # (batch, seq_len, vocab_size)
+    
+
+# Define the model
+class BiLSTMClassifierModel(nn.Module):
+    """
+    Basic BiLSTM network
+    """
+    def __init__(
+            self,
+            pretrained_embeddings: torch.tensor,
+            lstm_dim: int,
+            n_classes: int,
+            dropout_prob: float = 0.1,
+    ):
+        """
+        Initializer for basic BiLSTM network
+        :param pretrained_embeddings: A tensor containing the pretrained BPE embeddings
+        :param lstm_dim: The dimensionality of the BiLSTM network
+        :param dropout_prob: Dropout probability
+        :param n_classes: The number of output classes
+        """
+
+        super().__init__()
+
+        # We'll define the network in a ModuleDict, which makes organizing the model a bit nicer
+        # The components are an embedding layer, a 2 layer BiLSTM, and a feed-forward output layer
+        self.model = nn.ModuleDict({
+            'embeddings': nn.Embedding.from_pretrained(pretrained_embeddings, padding_idx=pretrained_embeddings.shape[0] - 1),
+            'bilstm': nn.LSTM(
+                pretrained_embeddings.shape[1],
+                lstm_dim,
+                1,
+                batch_first=True,
+                dropout=dropout_prob,
+                bidirectional=True),
+            'cls': nn.Linear(2*lstm_dim, n_classes)
+        })
+        self.n_classes = n_classes
+        self.dropout = nn.Dropout(p=dropout_prob)
+
+        # Initialize the weights of the model
+        self._init_weights()
+
+    def _init_weights(self):
+        all_params = list(self.model['bilstm'].named_parameters()) + \
+                     list(self.model['cls'].named_parameters())
+        for n,p in all_params:
+            if 'weight' in n:
+                nn.init.xavier_normal_(p)
+            elif 'bias' in n:
+                nn.init.zeros_(p)
+
+    def forward(self, inputs, input_lens):
+        """
+        Defines how tensors flow through the model
+        :param inputs: (b x sl) The IDs into the vocabulary of the input samples
+        :param input_lens: (b) The length of each input sequence
+        :return: (logits,)
+        """
+
+        # Get embeddings (b x sl x edim)
+        embeds = self.model['embeddings'](inputs)
+
+        # Pack padded: This is necessary for padded batches input to an RNN
+        lstm_in = nn.utils.rnn.pack_padded_sequence(
+            embeds,
+            input_lens.cpu(),
+            batch_first=True,
+            enforce_sorted=False
+        )
+
+        # Pass the packed sequence through the BiLSTM
+        lstm_out, hidden = self.model['bilstm'](lstm_in)
+
+        # Unpack the packed sequence --> (b x sl x 2*lstm_dim)
+        lstm_out,_ = nn.utils.rnn.pad_packed_sequence(lstm_out, batch_first=True)
+
+        # Max pool along the last dimension
+        ff_in = self.dropout(torch.max(lstm_out, 1)[0])
+        # Some magic to get the last output of the BiLSTM for classification (b x 2*lstm_dim)
+        #ff_in = lstm_out.gather(1, input_lens.view(-1,1,1).expand(lstm_out.size(0), 1, lstm_out.size(2)) - 1).squeeze()
+
+        # Get logits (b x n_classes)
+        logits = self.model['cls'](ff_in).view(-1, self.n_classes)
+
+        return logits
+
