@@ -2,5 +2,5 @@
 assignment-text.pdf
 cached_data/*
 results/
-mbert_*_classifier/
+mbert_classifiers/
 *.xlsx
