@@ -24,7 +24,7 @@ def prepare_data(df: pl.DataFrame) -> Dataset:
 
 
 # Tokenization function
-def tokenize_function(examples: Dataset, tokenizer: AutoTokenizer):
+def tokenize_function(examples: Dataset, tokenizer: AutoTokenizer) -> Dataset:
     # Tokenize with question and content separated by [SEP]
     # [CLS] is added automatically
     return tokenizer(
@@ -106,6 +106,9 @@ def predict(
     if torch.cuda.is_available():
         inputs = {k: v.cuda() for k, v in inputs.items()}
         model = model.cuda() # type: ignore
+    else:
+        inputs = {k: v.cpu() for k, v in inputs.items()}
+        model = model.cpu() # type: ignore
     
     model.eval() # type: ignore
     with torch.no_grad():
