@@ -9,6 +9,8 @@ from transformers import (
 from datasets import Dataset
 import polars as pl
 import torch
+from torch.cuda import OutOfMemoryError
+from typing import Any
 
 # Prepare your data
 def prepare_data(df: pl.DataFrame) -> Dataset:
@@ -78,7 +80,10 @@ def train_mbert(
     torch.cuda.empty_cache()
     # Train and save the model
     print("Training mBERT classifier...")
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
+    print(f"Environment variable set: {os.environ['PYTORCH_CUDA_ALLOC_CONF']}")
     trainer.train()
+
     return classifier, tokenizer
 
 # Function to get predictions
@@ -87,7 +92,7 @@ def predict(
     context: pl.Series,
     model: AutoModelForSequenceClassification,
     tokenizer: AutoTokenizer
-) -> dict[str, float]:
+) -> dict[str, Any]:
     """Get model prediction for a single example"""
     inputs = tokenizer(
         question, 

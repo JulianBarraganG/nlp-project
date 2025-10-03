@@ -2,6 +2,7 @@ import math
 import numpy as np
 from typing import TypeAlias, overload, Union
 from ngrams.utils import NGramsDict
+from decimal import Decimal, localcontext
 
 NGram = tuple[str, ...]
 Tokens: TypeAlias = list[str]
@@ -30,7 +31,7 @@ class NGramLM:
         # P(w_n | w_1 ... w_(n-1)) for each n-gram
         self.probabilities = {key: {} for key in self.nm1grams.keys()}
         self.smoothing = smoothing
-        self.alpha = 1 if smoothing else 0.0
+        self.alpha = 0.1 if smoothing else 0.0
         self._calc_word_probabilities()
 
     def _calc_word_probabilities(self) -> None:
@@ -68,7 +69,7 @@ class NGramLM:
             raise KeyError(f"(n-1)-gram {nm1gram} not found in model.")
         return self.probabilities[nm1gram]
 
-    def get_sentence_probability(self, sentence: list[NGram], verbose=False) -> float:
+    def _get_sentence_log_probability(self, sentence: list[NGram], verbose=False) -> float:
         """Get the probability of a sentence (list of tokens) under this model."""
         log_prob = 0.0
         assert len(sentence[0]) == self.n, "Each ngram in sentence must be of length n"
@@ -87,17 +88,31 @@ class NGramLM:
                 print(f"WARNING: Zero probability for ngram {ngram}.")
             log_prob += math.log(prob) if prob > 0.0 else 0.0
     
-        return math.exp(log_prob)
+        return log_prob
 
-    def get_perplexity(self, sentences: list[list[NGram]]) -> float:
+    def get_sentence_probability(self, sentence: list[NGram], verbose=False) -> float:
+        """Get the probability of a sentence (list of tokens) under this model."""
+        log_prob = self._get_sentence_log_probability(sentence, verbose)
+        return math.exp(log_prob) if log_prob < 0 else 1.0
+
+    def get_perplexity(self, sentences: list[list[NGram]]) -> Decimal:
         """Get the perplexity of the model, on an unseen test set"""
         # Get the total number of words. Counting </s> but not <s>:
-        N = sum([len(sentence) for sentence in sentences])
-        full_document_prob = sum([self.get_sentence_probability(sentence) for sentence in sentences])
-        if full_document_prob == 0.0:
+        N = 0
+        corpus_log_prob = 0.0
+        for sentence in sentences:
+            N += len(sentence)  # Each ngram has one word
+            log_prob = self._get_sentence_log_probability(sentence)
+            corpus_log_prob += log_prob
+        with localcontext() as ctx:
+            ctx.prec = 50  # Set precision high enough to avoid underflow
+            corpus_prob = Decimal(corpus_log_prob).exp()
+            print(f"Full corpus(unnormalized) prob: {corpus_prob}")
+            ppl = corpus_prob ** (Decimal(-1) / Decimal(N))
+        if corpus_prob == 0.0:
             print("WARNING: Zero document probability.")
-            return 0.0
-        return math.pow(full_document_prob, -(1/N))
+            return Decimal('inf')
+        return ppl
 
     @overload
     def __getitem__(self, key: NGram) -> np.ndarray:
