@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "accelerate>=1.10.1",
     "datasets>=4.0.0",
+    "evaluate>=0.4.6",
     "git-filter-repo>=2.47.0",
     "graphviz>=0.21",
     "jupyter>=1.1.1",
@@ -20,6 +21,7 @@ dependencies = [
     "polars>=1.33.1",
     "protobuf>=6.32.1",
     "rise>=5.7.1",
+    "rouge-score>=0.1.2",
     "sacrebleu>=2.5.1",
     "sacremoses>=0.1.1",
     "scikit-learn>=1.7.2",

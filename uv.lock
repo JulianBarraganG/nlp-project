@@ -8,6 +8,15 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "absl-py"
+version = "2.3.1"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/10/2a/c93173ffa1b39c1d0395b7e842bbdc62e556ca9d8d3b5572926f3e4ca752/absl_py-2.3.1.tar.gz", hash = "sha256:a97820526f7fbfd2ec1bce83f3f25e3a14840dac0d8e02a0b71cd75db3f77fc9", size = 116588, upload-time = "2025-07-03T09:31:44.05Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/8f/aa/ba0014cc4659328dc818a28827be78e6d97312ab0cb98105a770924dc11e/absl_py-2.3.1-py3-none-any.whl", hash = "sha256:eeecf07f0c2a93ace0772c92e596ace6d3d3996c042b2128459aaae2a76de11d", size = 135811, upload-time = "2025-07-03T09:31:42.253Z" },
+]
+
+[[package]]
 name = "accelerate"
 version = "1.10.1"
 source = { registry = "https://pypi.org/simple" }
@@ -690,6 +699,28 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/17/4d/ac7ffa80c69ea1df30a8aa11b3578692a5118e7cd1aa157e3ef73b092d15/dill-0.3.8.tar.gz", hash = "sha256:3ebe3c479ad625c4553aca177444d89b486b1d84982eeacded644afc0cf797ca", size = 184847, upload-time = "2024-01-27T23:42:16.145Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/c9/7a/cef76fd8438a42f96db64ddaa85280485a9c395e7df3db8158cfec1eee34/dill-0.3.8-py3-none-any.whl", hash = "sha256:c36ca9ffb54365bdd2f8eb3eff7d2a21237f8452b57ace88b1ac615b7e815bd7", size = 116252, upload-time = "2024-01-27T23:42:14.239Z" },
+]
+
+[[package]]
+name = "evaluate"
+version = "0.4.6"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "datasets" },
+    { name = "dill" },
+    { name = "fsspec", extra = ["http"] },
+    { name = "huggingface-hub" },
+    { name = "multiprocess" },
+    { name = "numpy" },
+    { name = "packaging" },
+    { name = "pandas" },
+    { name = "requests" },
+    { name = "tqdm" },
+    { name = "xxhash" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/ad/d0/0c17a8e6e8dc7245f22dea860557c32bae50fc4d287ae030cb0e8ab8720f/evaluate-0.4.6.tar.gz", hash = "sha256:e07036ca12b3c24331f83ab787f21cc2dbf3631813a1631e63e40897c69a3f21", size = 65716, upload-time = "2025-09-18T13:06:30.581Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/3e/af/3e990d8d4002bbc9342adb4facd59506e653da93b2417de0fa6027cb86b1/evaluate-0.4.6-py3-none-any.whl", hash = "sha256:bca85bc294f338377b7ac2f861e21c308b11b2a285f510d7d5394d5df437db29", size = 84069, upload-time = "2025-09-18T13:06:29.265Z" },
 ]
 
 [[package]]
@@ -1680,6 +1711,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "accelerate" },
     { name = "datasets" },
+    { name = "evaluate" },
     { name = "git-filter-repo" },
     { name = "graphviz" },
     { name = "jupyter" },
@@ -1693,6 +1725,7 @@ dependencies = [
     { name = "polars" },
     { name = "protobuf" },
     { name = "rise" },
+    { name = "rouge-score" },
     { name = "sacrebleu" },
     { name = "sacremoses" },
     { name = "scikit-learn" },
@@ -1713,6 +1746,7 @@ dependencies = [
 requires-dist = [
     { name = "accelerate", specifier = ">=1.10.1" },
     { name = "datasets", specifier = ">=4.0.0" },
+    { name = "evaluate", specifier = ">=0.4.6" },
     { name = "git-filter-repo", specifier = ">=2.47.0" },
     { name = "graphviz", specifier = ">=0.21" },
     { name = "jupyter", specifier = ">=1.1.1" },
@@ -1726,6 +1760,7 @@ requires-dist = [
     { name = "polars", specifier = ">=1.33.1" },
     { name = "protobuf", specifier = ">=6.32.1" },
     { name = "rise", specifier = ">=5.7.1" },
+    { name = "rouge-score", specifier = ">=0.1.2" },
     { name = "sacrebleu", specifier = ">=2.5.1" },
     { name = "sacremoses", specifier = ">=0.1.1" },
     { name = "scikit-learn", specifier = ">=1.7.2" },
@@ -3136,6 +3171,18 @@ sdist = { url = "https://files.pythonhosted.org/packages/ec/7a/e6d1796af9c1bd306
 wheels = [
     { url = "https://files.pythonhosted.org/packages/b9/e7/91ddb742829723d9746dc12c5c5d0511d34d6c8e378fa2bdf1e17c68a3d7/rise-5.7.1-py2.py3-none-any.whl", hash = "sha256:df8ce9f0e575d334b27ff40a1f91a4c78d9f7b4995858bb81185ceeaf98eae3a", size = 4276769, upload-time = "2020-10-29T01:31:20.223Z" },
 ]
+
+[[package]]
+name = "rouge-score"
+version = "0.1.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "absl-py" },
+    { name = "nltk" },
+    { name = "numpy" },
+    { name = "six" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e2/c5/9136736c37022a6ad27fea38f3111eb8f02fe75d067f9a985cc358653102/rouge_score-0.1.2.tar.gz", hash = "sha256:c7d4da2683e68c9abf0135ef915d63a46643666f848e558a1b9f7ead17ff0f04", size = 17400, upload-time = "2022-07-22T22:46:22.909Z" }
 
 [[package]]
 name = "rpds-py"
