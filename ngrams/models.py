@@ -107,7 +107,6 @@ class NGramLM:
         with localcontext() as ctx:
             ctx.prec = 50  # Set precision high enough to avoid underflow
             corpus_prob = Decimal(corpus_log_prob).exp()
-            print(f"Full corpus(unnormalized) prob: {corpus_prob}")
             ppl = corpus_prob ** (Decimal(-1) / Decimal(N))
         if corpus_prob == 0.0:
             print("WARNING: Zero document probability.")

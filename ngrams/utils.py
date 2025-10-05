@@ -1,14 +1,13 @@
 import polars as pl
 import nltk
 from transformers import AutoTokenizer
-from data.const import ARB_CACHE, KOR_CACHE, TELU_CACHE
 from typing import TypeAlias, cast
 
 NGram = tuple[str, ...]
 Tokens: TypeAlias = list[str]
 TokenizedSentences: TypeAlias = list[Tokens]
 NGramsDict: TypeAlias = dict[NGram, int]
-ModelReadyData: TypeAlias = tuple[tuple[NGramsDict, NGramsDict], list[list[NGram]]]
+ModelReadyData: TypeAlias = tuple[NGramsDict, NGramsDict, list[list[NGram]]]
 
 class DataInconsistencyError(Exception):
     """Custom error for data inconsistency issues."""
@@ -17,29 +16,16 @@ class DataInconsistencyError(Exception):
 mbert = AutoTokenizer.from_pretrained("bert-base-multilingual-uncased")
 mbert.add_tokens(["<s>", "</s>"])  # Add start and end tokens
 
-def tokenize(text: str, tokenizer = mbert.tokenize, n=1) -> list[str]:
+def _pad_and_tokenize(text: str, tokenizer = mbert.tokenize, n=1) -> Tokens:
     """Tokenizes text ready for n-gram using the provided tokenizer function."""
     assert n >= 1, "n must be at least 1"
     pad = (n-1) if n > 1 else 1
     text = ("<s>" * pad + text + "</s>")
     return tokenizer(text)
 
-def train_test_split_and_tokenize(corpus: pl.Series,
-                                  train_split: float = 0.7,
-                                  n: int = 1,
-                                  verbose: bool = False,
-) -> tuple[TokenizedSentences, TokenizedSentences]:
-    """Split into train, val, test"""
-    train_index = int(len(corpus) * train_split)
-    ngram_ready_tokens = [tokenize(seq, n=n) for seq in corpus]
-    context_train = ngram_ready_tokens[:train_index]
-    context_test = ngram_ready_tokens[train_index:]
-    if verbose:
-        print(f"Train size: {len(context_train):>15,} tokens.")
-        print(f"Test size: {len(context_test):>16,} tokens.")
-        print(f"Total corpus size: {len(context_train) + len(context_test):>8,} tokens.")
-    return context_train, context_test
-
+def my_tokenize(corpus: pl.Series, n: int=1) -> TokenizedSentences:
+    """Tokenizes a polars series of text data into list of token lists."""
+    return [(_pad_and_tokenize(sentence, n=n)) for sentence in corpus]
 
 def get_ngrams_dict(
     tokens: Tokens,
@@ -48,7 +34,7 @@ def get_ngrams_dict(
 ) -> NGramsDict:
     """Get n-grams count dictionary from list of tokens."""
     n_grams_gen = nltk.ngrams(tokens, n)
-    count_dict = {}
+    count_dict: NGramsDict = {}
     num_duplicates = 0
     for gram in n_grams_gen:
         if gram in count_dict:
@@ -91,13 +77,13 @@ def get_ngrams_dict_from_sentences(
     
     return all_count_dict
 
-def get_model_ready_data(corpus: pl.Series, n: int) -> ModelReadyData:
+def get_model_ready_data(x_train: pl.Series, x_test: pl.Series, n: int) -> ModelReadyData:
     """One function to call on relevant series, to get NGramModel ready data"""
-    x_train, x_test = train_test_split_and_tokenize(corpus, n=n)
-    nm1grams_dict = get_ngrams_dict_from_sentences(x_train, n-1, verbose=False)
-    ngrams_dict = get_ngrams_dict_from_sentences(x_train, n, verbose=False)
+    tokenized_train, tokenized_test = my_tokenize(x_train, n), my_tokenize(x_test, n)
+    nm1grams_dict = get_ngrams_dict_from_sentences(tokenized_train, n-1, verbose=False)
+    ngrams_dict = get_ngrams_dict_from_sentences(tokenized_train, n, verbose=False)
     # Make test into list of ngram sentences
-    x_test = list([nltk.ngrams(sentence, n) for sentence in x_test])
-    x_test = cast(list[list[NGram]], x_test)  # Type hinting for clarity
-    data = cast(ModelReadyData, (nm1grams_dict, ngrams_dict, x_test))
+    tokenized_test = [list(nltk.ngrams(sentence, n)) for sentence in tokenized_test]
+    tokenized_test = cast(list[list[NGram]], tokenized_test)  # Type hinting for clarity
+    data = (nm1grams_dict, ngrams_dict, tokenized_test)
     return data
