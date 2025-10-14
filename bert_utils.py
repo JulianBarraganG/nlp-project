@@ -9,7 +9,6 @@ from transformers import (
 from datasets import Dataset
 import polars as pl
 import torch
-from torch.cuda import OutOfMemoryError
 from typing import Any
 
 # Prepare your data
@@ -25,8 +24,6 @@ def prepare_data(df: pl.DataFrame) -> Dataset:
 
 # Tokenization function
 def tokenize_function(examples: Dataset, tokenizer: AutoTokenizer) -> Dataset:
-    # Tokenize with question and content separated by [SEP]
-    # [CLS] is added automatically
     return tokenizer(
         examples["question"],
         examples["context"],
@@ -87,7 +84,7 @@ def train_mbert(
     return classifier, tokenizer
 
 # Function to get predictions
-def predict(
+def predict_binary(
     question: pl.Series,
     context: pl.Series,
     model: AutoModelForSequenceClassification,

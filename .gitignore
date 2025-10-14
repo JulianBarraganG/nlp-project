@@ -4,3 +4,4 @@ cached_data/*
 results/
 mbert_classifiers/
 *.xlsx
+.vscode/
