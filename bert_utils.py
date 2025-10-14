@@ -5,6 +5,7 @@ from transformers import (
     AutoTokenizer,
     Trainer,
     TrainingArguments,
+    BertForTokenClassification,
 )
 from datasets import Dataset
 import polars as pl
@@ -99,13 +100,8 @@ def predict_binary(
         return_tensors="pt"
     ) # type: ignore
     
-    # Move to GPU if available
-    if torch.cuda.is_available():
-        inputs = {k: v.cuda() for k, v in inputs.items()}
-        model = model.cuda() # type: ignore
-    else:
-        inputs = {k: v.cpu() for k, v in inputs.items()}
-        model = model.cpu() # type: ignore
+    inputs = {k: v.cpu() for k, v in inputs.items()}
+    model = model.cpu() # type: ignore
     
     model.eval() # type: ignore
     with torch.no_grad():
@@ -120,3 +116,37 @@ def predict_binary(
         'prob_class_0': probs[0][0].item(),
         'prob_class_1': probs[0][1].item()
     }
+
+
+def predict_bio_sequence(
+    question: pl.Series,
+    context: pl.Series,
+    model: BertForTokenClassification,
+    tokenizer: AutoTokenizer
+):
+    """Get model BIO-label prediction sequence"""
+
+    inputs = tokenizer(
+        question, 
+        context, 
+        truncation=True,
+        padding="max_length",
+        max_length=512,
+        return_tensors="pt"
+    ) # type: ignore
+
+    # Move to GPU if available
+    inputs = {k: v.cpu() for k, v in inputs.items()}
+    model = model.cpu() # type: ignore
+    
+    model.eval() # type: ignore
+    with torch.no_grad():
+        outputs = model(**inputs) # type: ignore
+        logits = outputs.logits
+        #probs = torch.softmax(logits, dim=1)
+        #prediction = torch.argmax(logits, dim=1).item()
+    
+        probs = torch.softmax(logits, dim=2)  # Softmax over the last dimension (num_labels)
+        prediction = torch.argmax(probs, dim=2).squeeze().tolist()  #
+
+    return prediction
