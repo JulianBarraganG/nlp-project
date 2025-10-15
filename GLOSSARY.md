@@ -6,7 +6,7 @@
     Code point - unique id of each character
     Derivational morphemes - Idiosyncratic and semantically harder to predict
     Glyph - visual representation of the character
-    Inflectional morphemes - `s` and `es` for plural i.e. grammatically and semantically predictable. Clear syntactic role.
+    Inflectional morphemes - `s` and `es` for plural i.e. grammatically and semantically predictable. Clear syntactic role
     Morpheme - `er` is the morpheme of `longer`
     Morphology - the study of morphemes
     Utterance - linguistic term for spoken lang version of sentence
@@ -37,3 +37,16 @@
     MMLU - Massive Multitask Language Understanding benchmark, 57 subjects, multiple choice
     Teacher forcing - using true next word in sequence rather than predicted token in LLM training algo
     Zero-shot prompting - giving only the instruction (in the prompt) to guide the LM
+## Chapter 17
+
+    Closed Class (POS) - prepositions, pronouns, conjunctions etc. rarely new words added (closed membership).
+    Common Nouns - Concrete terms such as cat and mango; abstractions like algorithm and beauty.
+    Directional Adverbs - e.g. north, south, uphill, downstairs.
+    Locative Adverbs - e.g. home, here, there, outside.
+    Named Entity - roughly speaking, anything we can refer to with a proper name, e.g. person, org, location, product etc.
+    NER (Named Entity Recognition) - the task of identifying and classifying named entities in text e.g. NOUN, VERB or PERSON, ORG
+    Open Class (POS) - nouns, verbs, adjectives, adverbs etc. new words added frequently (open membership).
+    Phrasal Verb - e.g. turn down, give up, run into. A verb combined with a preposition or adverb.
+    POS (Part of Speech) - noun, verb, pronoun, preposition, adverb, conjunction, participle, articla, particle etc.
+    POS Tagging - the task of assigning POS tags to each (tokenized) word in a sentence.
+    Proper Nouns - Specific entities such as John, London, Linux.

@@ -7,8 +7,11 @@ from transformers import (
     TrainingArguments,
     BertForTokenClassification,
 )
+from sklearn.metrics import confusion_matrix, classification_report
 from datasets import Dataset
+import matplotlib.pyplot as plt
 import polars as pl
+import numpy as np
 import torch
 from typing import Any
 
@@ -57,8 +60,7 @@ def train_mbert(
         # Regularization
         weight_decay=0.01,
         # Memory settings
-        per_device_train_batch_size=4,
-        gradient_accumulation_steps=2,
+        auto_find_batch_size=True,
         fp16=True,
         # Evaluation
         per_device_eval_batch_size=8,
@@ -75,7 +77,8 @@ def train_mbert(
     )
     # Clear torch cache before training
     gc.collect()
-    torch.cuda.empty_cache()
+    with torch.no_grad():
+        torch.cuda.empty_cache()
     # Train and save the model
     print("Training mBERT classifier...")
     os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:True"
@@ -150,3 +153,106 @@ def predict_bio_sequence(
         prediction = torch.argmax(probs, dim=2).squeeze().tolist()  #
 
     return prediction
+
+
+def bio_sequence_labeler(
+    context: str, 
+    answer_start: int, 
+    answer_text: str,
+    tokenizer: AutoTokenizer,
+    max_length: int = 512,
+) -> np.ndarray:
+    """Creates a BIO-encoded sequence label for the answer span in the context.
+    If no answer, all 'O's. Encoded with 0, 1, 2 for O, B-ANS, I-ANS respectively."""
+    
+    if answer_start == -1:  # Unanswerable
+        encoding = tokenizer(context, return_offsets_mapping=True) # type: ignore
+        return np.zeros(max_length, dtype=np.int8)
+    
+    answer_end = answer_start + len(answer_text) # if answer_text else answer_start + 1
+    
+    encoding = tokenizer(
+        context,
+        return_offsets_mapping=True,
+        add_special_tokens=True,
+        truncation=True,
+        max_length=max_length,
+    ) # type: ignore
+    
+    tokens = encoding["input_ids"]
+    offset_mapping = encoding["offset_mapping"]
+    labels = np.zeros(max_length, dtype=np.int8)
+    
+    answer_token_indices = []
+    for idx, (token_start, token_end) in enumerate(offset_mapping):
+        if token_start == 0 and token_end == 0:
+            continue
+        if token_start < answer_end and token_end > answer_start:
+            answer_token_indices.append(idx)
+
+
+    if answer_token_indices:
+        answer_tokens_ids = [tokens[i] for i in answer_token_indices]
+        for i in range(len(tokens) - len(answer_tokens_ids) + 1): 
+            if tokens[i:i+len(answer_tokens_ids)] == answer_tokens_ids:
+                labels[i] = 1  # B-ANS
+                for j in range(i+1, i+len(answer_tokens_ids)):
+                    labels[j] = 2  # I-ANS
+        
+        #labels[answer_token_indices[0]] = 1
+        #for idx in answer_token_indices[1:]:
+        #    labels[idx] = 2
+
+    elif answer_text:
+        print(f"WARNING: No tokens found for answer '{answer_text}' at position {answer_start}")
+        print(f"Context: {context[max(0, answer_start-20):answer_start+len(answer_text)+20]}")
+    
+    return labels
+
+def get_results(
+    model: BertForTokenClassification,
+    val_set: pl.DataFrame,
+    tokenizer: AutoTokenizer,
+) -> tuple[list[int], list[int]]:
+    """Return y_true and y_pred lists for evaluation"""
+    y_true = []
+    y_pred = []
+    y_pred = predict_bio_sequence(
+        val_set["question"].to_list(), # type: ignore
+        val_set["context"].to_list(), # type: ignore
+        model,
+        tokenizer, 
+    )
+    y_true = val_set["labels"].explode().to_list()
+    y_pred = np.array(y_pred).flatten().tolist()
+
+    return y_true, y_pred
+
+
+def display_results(
+    y_pred: list[int],
+    y_true: list[int],
+    bio_labels: list[str] = ["O", "B-ANS", "I-ANS"],
+) -> None:
+    """Display confusion matrix and classification report"""
+
+    cm = confusion_matrix(y_true, y_pred, normalize="true")
+    plt.figure(figsize=(8, 6))
+    plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues) # type: ignore
+    plt.title(f"Confusion Matrix")
+
+    plt.colorbar()
+    tick_marks = range(len(bio_labels))
+    plt.xticks(tick_marks, bio_labels)
+    plt.yticks(tick_marks, bio_labels)
+    plt.xlabel("Predicted Label")
+    plt.ylabel("True Label")
+    # Include numbers as text in the plot
+    thresh = cm.max() / 2.
+    for i in range(cm.shape[0]):
+        for j in range(cm.shape[1]):
+            plt.text(j, i, f"{cm[i, j]:.2f}",
+                     horizontalalignment="center",
+                     color="white" if cm[i, j] > thresh else "black")
+    plt.show()
+    print(f"Classification Report:\n{classification_report(y_true, y_pred, target_names=bio_labels)}")   

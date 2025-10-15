@@ -3,5 +3,6 @@ assignment-text.pdf
 cached_data/*
 results/
 mbert_classifiers/
+mbert-iob/
 *.xlsx
 .vscode/
