@@ -1,0 +1,30 @@
+{
+    "question":{
+        "0": "Which company published the video game 'Hell's Kitchen: The Game'?",
+        "1": "八一大楼是什么时候完全建成的？",
+    },
+    "context":{
+        "0": "Hell's Kitchen: The Game is a time management cooking video game based on the reality competition show of the same name. It was developed by Ludia and published by Ubisoft. It features the host of the show, Gordon Ramsay as the A.I. and places the player as a chef under his guidance, while serving customers at the restaurant. It was initially released in September 2008[1] on the Nintendo DS, the Nintendo Wii, Microsoft Windows, and Mac OS.",
+        "1": "The first PLA main office in Beijing was located at 20 Jingshan Qianjie, also known as the 'Three Gates' complex. These facilities were fairly small, so since the 1980s there were plans to build a larger complex. The August 1st building project started in 1988 under the direction of recently retired head of the PLA General Office, Fu Xuezheng. The construction project broke ground on 2 March 1997, the main structure was completed by October 30, 1997, basically completed the facade and equipment installation by the end of 1998, and the building was fully completed at the end of July 1999. The total investment of the project was RMB 779 million, with a total floor area of 90,255m2, for an average cost of 8,631.9RMB/m2.",
+    },
+    "lang":{
+        "0": "en",
+        "1": "zh",
+    },
+    "answerable":{
+        "0": true,
+        "1": true,
+    },
+    "answer_start":{
+        "0": 164,
+        "1": 584,
+    },
+    "answer":{
+        "0": "Ubisoft",
+        "1": "July 1999",
+    },
+    "answer_inlang":{
+        "0": "Ubisoft",
+        "1": "1999年7月"
+    }
+}
