@@ -154,60 +154,87 @@ def predict_bio_sequence(
 
     return prediction
 
-
-def bio_sequence_labeler(
-    context: str, 
-    answer_start: int, 
+def _get_answer_ids(
+    answer_start: int,
     answer_text: str,
+    context: str,
     tokenizer: AutoTokenizer,
     max_length: int = 512,
-) -> np.ndarray:
-    """Creates a BIO-encoded sequence label for the answer span in the context.
-    If no answer, all 'O's. Encoded with 0, 1, 2 for O, B-ANS, I-ANS respectively."""
-    
+) -> list[int]:
+    """Get token input indices for the answer span in the context."""
+
+    answer_end = answer_start + len(answer_text)
+
     if answer_start == -1:  # Unanswerable
-        encoding = tokenizer(context, return_offsets_mapping=True) # type: ignore
-        return np.zeros(max_length, dtype=np.int8)
-    
-    answer_end = answer_start + len(answer_text) # if answer_text else answer_start + 1
-    
-    encoding = tokenizer(
+        return []
+
+    context_encoding = tokenizer(
         context,
         return_offsets_mapping=True,
         add_special_tokens=True,
         truncation=True,
         max_length=max_length,
     ) # type: ignore
-    
-    tokens = encoding["input_ids"]
-    offset_mapping = encoding["offset_mapping"]
-    labels = np.zeros(max_length, dtype=np.int8)
-    
+
     answer_token_indices = []
+    offset_mapping = context_encoding["offset_mapping"]
+
     for idx, (token_start, token_end) in enumerate(offset_mapping):
         if token_start == 0 and token_end == 0:
             continue
         if token_start < answer_end and token_end > answer_start:
             answer_token_indices.append(idx)
 
-
     if answer_token_indices:
-        answer_tokens_ids = [tokens[i] for i in answer_token_indices]
-        for i in range(len(tokens) - len(answer_tokens_ids) + 1): 
-            if tokens[i:i+len(answer_tokens_ids)] == answer_tokens_ids:
-                labels[i] = 1  # B-ANS
-                for j in range(i+1, i+len(answer_tokens_ids)):
-                    labels[j] = 2  # I-ANS
-        
-        #labels[answer_token_indices[0]] = 1
-        #for idx in answer_token_indices[1:]:
-        #    labels[idx] = 2
-
-    elif answer_text:
+        answer_input_ids = [context_encoding["input_ids"][idx] for idx in answer_token_indices]
+        return answer_input_ids
+    else:
         print(f"WARNING: No tokens found for answer '{answer_text}' at position {answer_start}")
         print(f"Context: {context[max(0, answer_start-20):answer_start+len(answer_text)+20]}")
-    
+        return []
+
+
+def bio_sequence_labeler(
+    answer_start: int,
+    answer_text: str,
+    question: str,
+    context: str, 
+    tokenizer: AutoTokenizer,
+    max_length: int = 512,
+) -> np.ndarray:
+    """Creates a BIO-encoded sequence label for the answer span in the context.
+    If no answer, all 'O's. Encoded with 0, 1, 2 for O, B-ANS, I-ANS respectively."""
+
+    answer_input_ids = _get_answer_ids(
+        answer_start,
+        answer_text,
+        context,
+        tokenizer,
+        max_length,
+    )
+        
+    labels = np.zeros(max_length, dtype=np.int8)
+
+    full_encoding = tokenizer(
+        question,
+        context,
+        add_special_tokens=True,
+        truncation=True,
+        max_length=max_length,
+    ) # type: ignore
+
+    full_sequence_ids = full_encoding["input_ids"]
+    seq_len = len(full_sequence_ids)
+    ans_len = len(answer_input_ids)
+    if answer_input_ids:
+        for i in range(seq_len - ans_len + 1): 
+            if full_sequence_ids[i:(i + ans_len)] == answer_input_ids:
+                labels[i] = 1  # B-ANS
+                for j in range(i+1, i+ans_len):
+                    labels[j] = 2  # I-ANS
+        
     return labels
+
 
 def get_results(
     model: BertForTokenClassification,
