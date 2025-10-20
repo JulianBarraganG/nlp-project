@@ -11,6 +11,11 @@
         "8": "ما هي حالات الاستخدام الأساسية لـ 'Krita'؟",
         "9": "ما الذي جعل 'Western Digital Raptor' عتيقًا؟",
         "10": "أين تم تدجين الأرز لأول مرة؟",
+        "11": "What year did Alan Turing prove the halting problem undecidable?",
+        "12": "サンフランシスコ条約は何年に発効したのですか",
+	"13": "후쿠시마 원자력 사고의 직접적인 원인은 무엇이었나요?",
+	"14": "¿Cuál fue el término que utilizó Colón para referirse a los habitantes de las tierras que visitó?",
+	"15": "من هو مؤلف قصة أليس في بلاد العجائب؟,"
     },
     "context":{
         "0": "Hell's Kitchen: The Game is a time management cooking video game based on the reality competition show of the same name. It was developed by Ludia and published by Ubisoft. It features the host of the show, Gordon Ramsay as the A.I. and places the player as a chef under his guidance, while serving customers at the restaurant. It was initially released in September 2008[1] on the Nintendo DS, the Nintendo Wii, Microsoft Windows, and Mac OS.",
@@ -24,7 +29,13 @@
         "8": "Krita is a free and open-source raster graphics editor designed primarily for digital art and 2D animation. Originally created for Linux, the software also runs on Windows, macOS, Haiku, Android, and ChromeOS, and features an OpenGL-accelerated canvas, colour management support, an advanced brush engine, non-destructive layers and masks, group-based layer management, vector artwork support, and switchable customisation profiles.",
         "9": "The Western Digital Raptor is a discontinued series of high performance hard disk drives produced by Western Digital, first marketed in 2003. In mid 2016 WD discontinued the lineup without any direct successor, only made obsolete by Solid State Drives(SSDs) which were significantly faster with less noise and power consumption in a smaller form factor too. The drive occupied a niche in the enthusiast, workstation and small-server market though they never reached mainstream adoption and popularity.",
         "10": "Rice is a cereal grain and in its domesticated form is the staple food of over half of the world's population, particularly in Asia and Africa. Rice is the seed of the grass species Oryza sativa (Asian rice)—or, much less commonly, Oryza glaberrima (African rice). Asian rice was domesticated in China some 13,500 to 8,200 years ago; African rice was domesticated in Africa about 3,000 years ago. Rice has become commonplace in many cultures worldwide; in 2023, 800 million tons were produced, placing it third after sugarcane and maize. Only some 8% of rice is traded internationally.",
+        "11": "Alan Turing's paper On Computable Numbers With an Application to the Entscheidungsproblem goes to press in May 1936 and reaches print in January 1937. Turing proves three problems undecidable: the 'satisfaction' problem, the 'printing' problem, and the Entscheidungsproblem. Turing's proof differs from Church's by introducing the notion of computation by machine. This is one of the 'first examples of decision problems proved unsolvable'.",
+        "12": "Japan was occupied and administered by the Allies of World War II from the surrender of the Empire of Japan on September 2, 1945, at the war's end until the Treaty of San Francisco took effect on April 28, 1952.",
+	"13": "On March 11, 2011, a major nuclear accident started at the Fukushima Daiichi Nuclear Power Plant in Ōkuma, Fukushima, Japan. The direct cause was the Tōhoku earthquake and tsunami, which resulted in electrical grid failure and damaged nearly all of the power plant's backup energy sources.",
+	"14": "Columbus called the inhabitants of the lands that he visited Los Indios ('Indians'). He initially encountered the Lucayan, Taíno, and Arawak peoples. Noting their gold ear ornaments, Columbus took some of the Arawaks prisoner and insisted that they guide him to the source of the gold.",
+	"15": "Alice's Adventures in Wonderland (also known as Alice in Wonderland) is an 1865 English children's novel by Lewis Carroll, a mathematics don at the University of Oxford. It details the story of a girl named Alice who falls through a rabbit hole into a fantasy world of anthropomorphic creatures. It is seen as an example of the literary nonsense genre. The artist John Tenniel provided 42 wood-engraved illustrations for the book."
     },
+ewis Carroll, a mathematics don at the University of Oxford. It details the story of a girl named Alice who falls through a rabbit hole into a fantasy world of anthropomorphic creatures. It is seen as an example of the literary nonsense genre. The artist John Tenniel provided 42 wood-engraved illustrations for the book.
     "lang":{
         "0": "en",
         "1": "zh",
@@ -37,6 +48,11 @@
         "8": "ar",
         "9": "ar",
         "10": "ar",
+        "11": "en",
+	"12": "ja",
+	"13": "ko",
+	"14": "es",
+	"15": "ar",
     },
     "answerable":{
         "0": true,
@@ -50,6 +66,11 @@
         "8": true,
         "9": true,
         "10": true,
+        "11": true,
+	"12": true,
+	"13": true,
+	"14": true,
+	"15": true,
     },
     "answer_start":{
         "0": 164,
@@ -63,6 +84,11 @@
         "8": 78, 
         "9": 233,
         "10": 297,
+        "11": 107,
+        "12": 206,
+	"13": 146,
+	"14": 74,
+	"15": 108,
     },
     "answer":{
         "0": "Ubisoft",
@@ -76,6 +102,11 @@
         "8": "digital art and 2D animation",
         "9": "Solid State Drives",
         "10": "China",
+        "11": "1936",
+        "12": "1952",
+	"13": "the Tōhoku earthquake and tsunami",
+	"14": "Indians",
+	"15": "Lewis Carroll",
     },
     "answer_inlang":{
         "0": "Ubisoft",
@@ -89,5 +120,10 @@
         "8": "الفن الرقمي والرسوم المتحركة ثنائية الأبعاد",
         "9": "محركات الأقراص ذات الحالة الصلبة",
         "10": "الصين",
+        "11": "1936",
+        "12": "1952",
+	"13": "도호쿠 지진과 쓰나미",
+	"14": "Los Indios",
+	"15": "لويس كارول ",
     }
 }
