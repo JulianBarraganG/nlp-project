@@ -2,6 +2,8 @@ import polars as pl
 from datasets import Dataset
 import numpy as np
 import evaluate
+from transformers import Seq2SeqTrainingArguments, DataCollatorForSeq2Seq, Seq2SeqTrainer
+
 
 def answer_question(promt: str, model, tokenizer, **kwargs) -> str:
     input_tokens = tokenizer(promt, return_tensors="pt", truncation=True, max_length=512).to(device)
@@ -80,3 +82,42 @@ def compute_metrics(eval_preds, tokenizer):
         "rougeL": round(rouge["rougeL"], 4),
         "rougeLsum": round(rouge.get("rougeLsum", 0.0), 4),
     }
+
+# https://huggingface.co/learn/llm-course/chapter7/4?fw=pt
+def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir, epochs):
+    training_args = Seq2SeqTrainingArguments(
+        fp16=False,
+        auto_find_batch_size=True,
+
+        output_dir=output_dir,
+        overwrite_output_dir = True,
+        learning_rate=2e-5,
+        
+        predict_with_generate=True,
+        num_train_epochs=epochs,
+        weight_decay=0.01,
+        generation_max_length=128,
+
+        save_total_limit=3,
+        save_strategy = "best",
+        load_best_model_at_end = True,
+
+        logging_strategy="epoch",
+        eval_strategy = "epoch",
+        log_level="info",
+        report_to=[],
+        logging_dir=None
+    )
+    #data_collator = DataCollatorForSeq2Seq(mt5_tokenizer, model=mt5_model)
+
+    trainer = Seq2SeqTrainer(
+        model=model,
+        args=training_args,
+        train_dataset=train_dataset,
+        eval_dataset=eval_dataset,
+        tokenizer=tokenizer,
+    #    data_collator=data_collator,
+        compute_metrics=lambda eval_preds: compute_metrics(eval_preds, tokenizer)
+    )
+
+    return trainer
