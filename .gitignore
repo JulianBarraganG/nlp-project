@@ -6,3 +6,4 @@ mbert_classifiers/
 mbert-iob/
 *.xlsx
 .vscode/
+tmp/
