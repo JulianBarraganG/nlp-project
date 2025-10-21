@@ -260,15 +260,16 @@ def display_results(
     y_pred: list[int],
     y_true: list[int],
     bio_labels: list[str] = ["O", "B-ANS", "I-ANS"],
+    title: str = "Confusion Matrix"
 ) -> None:
     """Display confusion matrix and classification report"""
 
     cm = confusion_matrix(y_true, y_pred, normalize="true")
     plt.figure(figsize=(8, 6))
     plt.imshow(cm, interpolation="nearest", cmap=plt.cm.Blues) # type: ignore
-    plt.title(f"Confusion Matrix")
+    plt.title(title)
 
-    plt.colorbar()
+    #plt.colorbar()
     tick_marks = range(len(bio_labels))
     plt.xticks(tick_marks, bio_labels)
     plt.yticks(tick_marks, bio_labels)
