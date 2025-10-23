@@ -2,7 +2,7 @@ import polars as pl
 from datasets import Dataset
 import numpy as np
 import evaluate
-from transformers import Seq2SeqTrainingArguments, DataCollatorForSeq2Seq, Seq2SeqTrainer
+from transformers import Seq2SeqTrainingArguments, DataCollatorForSeq2Seq, Seq2SeqTrainer, EarlyStoppingCallback
 
 
 def answer_question(promt: str, model, tokenizer, **kwargs) -> str:
@@ -84,7 +84,7 @@ def compute_metrics(eval_preds, tokenizer):
     }
 
 # https://huggingface.co/learn/llm-course/chapter7/4?fw=pt
-def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir, epochs):
+def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir, epochs, patience=3):
     training_args = Seq2SeqTrainingArguments(
         fp16=False,
         auto_find_batch_size=True,
@@ -117,7 +117,8 @@ def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir,
         eval_dataset=eval_dataset,
         tokenizer=tokenizer,
     #    data_collator=data_collator,
-        compute_metrics=lambda eval_preds: compute_metrics(eval_preds, tokenizer)
+        compute_metrics=lambda eval_preds: compute_metrics(eval_preds, tokenizer),
+        callbacks = [EarlyStoppingCallback(patience)]
     )
 
     return trainer
