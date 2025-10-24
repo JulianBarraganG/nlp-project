@@ -21,7 +21,8 @@ def generate_prompt_wo_context(df: pl.DataFrame):
 
 def generate_prompt_with_context(df: pl.DataFrame):
     df = df.with_columns([
-        (pl.lit("Question: ") + pl.col("question") + pl.lit("\n Context: ") + pl.col("context")).alias("prompt")
+        #(pl.lit("Question: ") + pl.col("question") + pl.lit("\n Context: ") + pl.col("context")).alias("prompt")
+        (pl.col("question") + pl.lit('</s>') + pl.col("context")).alias("prompt")
     ])
     return df
 
@@ -66,6 +67,7 @@ def compute_metrics(eval_preds, tokenizer):
     # Cleaning predictions
     labels = np.where(labels != -100, labels, tokenizer.pad_token_id) # Replace -100 in labels with pad_token_id for decoding
     preds = np.where((preds < 0) | (preds >= tokenizer.vocab_size), tokenizer.unk_token_id, preds) # Replace out-of-range token IDs with <unk> ID
+    # = np.where(preds != 250099, preds, tokenizer.pad_token_id) # Replace 250099 in preds with pad_token_id
 
     decoded_preds = tokenizer.batch_decode(preds, skip_special_tokens=True)
     decoded_labels = tokenizer.batch_decode(labels, skip_special_tokens=True)
@@ -122,3 +124,21 @@ def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir,
     )
 
     return trainer
+
+def get_extra_id_0_proportion(df, tokenizer, model, device):
+    inputs = tokenizer(
+        df["prompt"].to_list(),
+        return_tensors="pt",
+        truncation=True,
+        padding="max_length",
+        max_length=512
+        ).to(device)
+
+    outputs = model.generate(**inputs)
+    gen_answer = tokenizer.batch_decode(outputs, skip_special_tokens=True)
+
+    count_extra_id_0 = sum(1 for ans in gen_answer if ans.strip() == "<extra_id_0>.")
+    total_answers = len(gen_answer)
+    proportion_extra_id_0 = count_extra_id_0 / total_answers if total_answers > 0 else 0
+    
+    return proportion_extra_id_0
