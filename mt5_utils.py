@@ -4,12 +4,14 @@ import numpy as np
 import evaluate
 from transformers import Seq2SeqTrainingArguments, DataCollatorForSeq2Seq, Seq2SeqTrainer, EarlyStoppingCallback
 
+# Maximum number of label/generated tokens
+MAX_GEN = 64
 
 def answer_question(promt: str, model, tokenizer, **kwargs) -> str:
     input_tokens = tokenizer(promt, return_tensors="pt", truncation=True, max_length=512).to(device)
     generated_tokens = model.generate(
         **input_tokens,
-        max_new_tokens=64,
+        max_new_tokens=MAX_GEN,
         **kwargs
     )
     answer = tokenizer.decode(generated_tokens[0], skip_special_tokens=True)
@@ -39,7 +41,7 @@ def tokenize_to_dataset(df: pl.DataFrame, tokenizer, question_col: str = "prompt
         return_tensors="pt",
         truncation=True,
         padding="max_length",
-        max_length=64
+        max_length=MAX_GEN
     )
 
     labels = labels["input_ids"]
@@ -96,7 +98,7 @@ def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir,
         predict_with_generate=True,
         num_train_epochs=epochs,
         weight_decay=0.01,
-        generation_max_length=128,
+        generation_max_length=MAX_GEN,
 
         save_total_limit=3,
         save_strategy = "best",
@@ -108,7 +110,7 @@ def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir,
         report_to=[],
         logging_dir=None
     )
-    #data_collator = DataCollatorForSeq2Seq(mt5_tokenizer, model=mt5_model)
+    data_collator = DataCollatorForSeq2Seq(mt5_tokenizer, model=mt5_model)
 
     trainer = Seq2SeqTrainer(
         model=model,
@@ -116,7 +118,7 @@ def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir,
         train_dataset=train_dataset,
         eval_dataset=eval_dataset,
         tokenizer=tokenizer,
-    #    data_collator=data_collator,
+        data_collator=data_collator,
         compute_metrics=lambda eval_preds: compute_metrics(eval_preds, tokenizer),
         callbacks = [EarlyStoppingCallback(patience)]
     )
