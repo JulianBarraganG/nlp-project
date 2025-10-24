@@ -158,5 +158,35 @@
     "answer": "Lewis Carroll",
     "answer_inlang": "لويس كارول ",
     "translation": "Who is the author of 'Alice's Adventures in Wonderland'?"
+  },
+  {
+    "question": "'uwu' అనే ఎమోటికాన్ అర్థం ఏమిటి?",
+    "context": "The emoticon uwu is known to date back as far as April 11, 2000, when it was used by furry artist Ghislain Deslierres in a post on the furry art site VCL (Vixen Controlled Library). A 2005 anime fanfiction contained another early use of the word. The origin of the term is unknown, with many people believing it to originate in Internet chat rooms. By 2014, the emoticon had spread across the Internet into Tumblr, becoming an Internet subculture.",
+    "lang": "te",
+    "answerable": false,
+    "answer_start": -1,
+    "answer": "a cute face",
+    "answer_inlang":"ముద్దుగా ఉండే ముఖం",
+    "translation": "What is the meaning of the emoticon 'uwu'?"
+  },
+  {
+    "question": "에이콘 컴퓨터는 몇 년도에 폐업했습니까?",
+    "context": "Acorn Computers's Acorn Electron, released in 1983, and the later Acorn Archimedes, were highly popular in Britain, while Acorn's BBC Micro computer dominated the educational computer market during the 1980s. The company also designed the ARM architecture and the RISC OS operating system for it. The architecture part of the business was spun-off as Advanced RISC Machines under a joint venture with Apple and VLSI in 1990, now known as Arm Holdings, which is dominant in the mobile phone and personal digital assistant (PDA) microprocessor market today.",
+    "lang": "ko",
+    "answerable": false,
+    "answer_start": -1,
+    "answer": "1999",
+    "answer_inlang": "1999년",
+    "translation": "What year did Acorn Computers go defunct?"
+  },
+  {
+    "question": "ما هو اسم تميمة 'ميكسوي بينغتشنغ'؟",
+    "context": "Mixue Ice Cream & Tea is a Chinese multinational fast-food restaurant chain specializing in ice cream and tea-based drinks. It was founded in 1997 in Zhengzhou by Zhang Hongchao. As of early 2025, it operated more than 45,000 stores in China and overseas, which makes it the world’s largest food-service chain by number of stores. Most locations are franchised and the company generates a large share of its revenue by supplying ingredients, equipment, and packaging to franchisees. Its menu emphasizes low-priced items such as soft-serve ice cream and milk tea. ",
+    "lang": "ar",
+    "answerable": false,
+    "answer_start": -1,
+    "answer": "Snow King",
+    "answer_inlang": "ملك الثلج",
+    "translation": "What is the name of Mixue Ice Cream & Tea's mascot?"
   }
 ]
