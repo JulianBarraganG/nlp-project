@@ -188,5 +188,15 @@
     "answer": "Snow King",
     "answer_inlang": "ملك الثلج",
     "translation": "What is the name of Mixue Ice Cream & Tea's mascot?"
+  },
+  {
+    "question": "What is the exact origin of the name for the dish commonly known as 'ramen'?",
+    "context": "There are various theories on how the dish came to be named 'ramen', but the most plausible is that the term was misapplied by Japanese colonizers. After the end of World War II in 1945, millions of Japanese settler colonists were repatriated to Japan from China. They may have labeled the southern Chinese noodle dishes in Japan 'ramen', based on their superficial resemblance to lamian dishes they had encountered in northern China, particularly in the Japanese-backed puppet state of Manchukuo. This timing aligns with the first mention of ramen as a dish appearing in Hatsuko Kuroda's Enjoyable Home Cooking (1947).",
+    "lang": "en",
+    "answerable": false,
+    "answer_start": -1,
+    "answer": "Unknown",
+    "answer_inlang": "Unknown",
+    "translation": "What is the exact origin of the name for the dish commonly known as 'ramen'?"
   }
 ]
