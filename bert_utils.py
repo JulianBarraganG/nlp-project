@@ -56,15 +56,14 @@ def train_mbert(
         output_dir="./results",
         eval_strategy="epoch",
         learning_rate=2e-5,
-        num_train_epochs=3,
+        num_train_epochs=10,
         # Regularization
         weight_decay=0.01,
         # Memory settings
         auto_find_batch_size=True,
         fp16=True,
         # Evaluation
-        per_device_eval_batch_size=8,
-        save_strategy="epoch",
+        save_strategy="best",
         load_best_model_at_end=True,
     )
 

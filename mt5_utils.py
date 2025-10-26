@@ -112,7 +112,7 @@ def trainer_generator(model, tokenizer, train_dataset, eval_dataset, output_dir,
         report_to=[],
         logging_dir=None
     )
-    data_collator = DataCollatorForSeq2Seq(mt5_tokenizer, model=mt5_model)
+    data_collator = DataCollatorForSeq2Seq(tokenizer, model=model)
 
     trainer = Seq2SeqTrainer(
         model=model,
