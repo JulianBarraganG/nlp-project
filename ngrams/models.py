@@ -31,7 +31,7 @@ class NGramLM:
         # P(w_n | w_1 ... w_(n-1)) for each n-gram
         self.probabilities = {key: {} for key in self.nm1grams.keys()}
         self.smoothing = smoothing
-        self.alpha = 0.1 if smoothing else 0.0
+        self.alpha = 0.00001 if smoothing else 0.0
         self._calc_word_probabilities()
 
     def _calc_word_probabilities(self) -> None:
